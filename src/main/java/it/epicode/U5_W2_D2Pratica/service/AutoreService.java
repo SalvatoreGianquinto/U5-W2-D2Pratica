@@ -14,12 +14,12 @@ public class AutoreService {
 
     public Autore saveAutore(Autore autore){
         autore.setId(new Random().nextInt(1,200));
-       autore.setAvatar("https://ui-avatars.com/api");
+        autore.setAvatar("https://ui-avatars.com/api" + autore.getNome() + autore.getCognome());
         autori.add(autore);
         return autore;
     }
 
-    public Autore getAutore(int id){
+    public Autore getAutore(int id) throws AutoreNotFoundException {
         return autori.stream().filter(autore -> autore.getId()== id)
                 .findFirst()
                 .orElseThrow(() -> new AutoreNotFoundException("Non esiste un autore con questo id " + id));
