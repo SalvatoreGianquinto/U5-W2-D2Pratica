@@ -1,8 +1,9 @@
 package it.epicode.U5_W2_D2Pratica.controller;
 
-import it.epicode.U5_W2_D2Pratica.exception.BlogPostNotFoundException;
-import it.epicode.U5_W2_D2Pratica.model.Autore;
+import it.epicode.U5_W2_D2Pratica.dto.BlogPostDto;
+import it.epicode.U5_W2_D2Pratica.exception.NotFoundException;
 import it.epicode.U5_W2_D2Pratica.model.BlogPost;
+import it.epicode.U5_W2_D2Pratica.repository.AutoreRepository;
 import it.epicode.U5_W2_D2Pratica.service.BlogPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,33 +12,37 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/blogpost")
 public class BlogPostController {
     @Autowired
     private BlogPostService blogPostService;
 
-    @PostMapping("/blogpost")
+    @Autowired
+    AutoreRepository autoreRepository;
+
+    @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public BlogPost saveBlogPost(@RequestBody BlogPost blogPost){
-        return blogPostService.saveBlogPost(blogPost);
+    public BlogPost saveBlogPost(@RequestBody BlogPostDto blogPostDto) throws NotFoundException {
+        return blogPostService.saveBlogPost(blogPostDto);
     }
 
-    @GetMapping("/blogpost/{id}")
-    public BlogPost getBlogPost(@PathVariable int id) throws BlogPostNotFoundException{
+    @GetMapping("{id}")
+    public BlogPost getBlogPost(@PathVariable int id) throws NotFoundException{
         return blogPostService.getBlogPost(id);
     }
 
-    @GetMapping("/blogpost")
+    @GetMapping("")
     public List<BlogPost> getAllBlogPost(){
         return blogPostService.getAllBlogPost();
     }
 
-    @PutMapping("/blogpost/{id}")
-    public BlogPost updateBlogPost(@PathVariable int id,@RequestBody BlogPost blogPost) throws BlogPostNotFoundException{
-        return blogPostService.updateBlogPost(id, blogPost);
+    @PutMapping("{id}")
+    public BlogPost updateBlogPost(@PathVariable int id,@RequestBody BlogPostDto blogPostDto) throws NotFoundException{
+        return blogPostService.updateBlogPost(id, blogPostDto);
     }
 
-    @DeleteMapping("/blogpost/{id}")
-    public void deleteBlogPost(@PathVariable int id) throws BlogPostNotFoundException{
+    @DeleteMapping("{id}")
+    public void deleteBlogPost(@PathVariable int id) throws NotFoundException{
         blogPostService.deleteBlogPost(id);
     }
 }

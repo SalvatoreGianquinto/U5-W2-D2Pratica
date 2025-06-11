@@ -1,44 +1,46 @@
 package it.epicode.U5_W2_D2Pratica.controller;
 
-import it.epicode.U5_W2_D2Pratica.exception.AutoreNotFoundException;
-import it.epicode.U5_W2_D2Pratica.exception.BlogPostNotFoundException;
+import it.epicode.U5_W2_D2Pratica.dto.AutoreDto;
+
+import it.epicode.U5_W2_D2Pratica.exception.NotFoundException;
 import it.epicode.U5_W2_D2Pratica.model.Autore;
-import it.epicode.U5_W2_D2Pratica.model.BlogPost;
 import it.epicode.U5_W2_D2Pratica.service.AutoreService;
-import it.epicode.U5_W2_D2Pratica.service.BlogPostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/autore")
 public class AutoreController {
     @Autowired
     private AutoreService autoreService;
 
-    @PostMapping("/autore")
-    public Autore saveAutore(@RequestBody Autore autore){
-        return autoreService.saveAutore(autore);
+    @PostMapping("")
+    public Autore saveAutore(@RequestBody AutoreDto autoreDto){
+        return autoreService.saveAutore(autoreDto);
     }
 
-    @GetMapping("/autore/{id}")
-    public Autore getAutore(@PathVariable int id) throws AutoreNotFoundException{
+    @GetMapping("{id}")
+    public Autore getAutore(@PathVariable int id) throws NotFoundException {
         return autoreService.getAutore(id);
     }
 
-    @GetMapping("/autore")
-    public List<Autore> getAllAutori(){
-        return autoreService.getAllAutori();
+    @GetMapping("")
+    public Page<Autore> getAllAutori(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size,
+                                     @RequestParam(defaultValue = "id") String sortBy){
+        return autoreService.getAllAutori(page, size, sortBy);
     }
 
-    @PutMapping("/autore/{id}")
-    public Autore updateAutore(@PathVariable int id,@RequestBody Autore autore) throws AutoreNotFoundException{
-        return autoreService.updateAutore(id, autore);
+    @PutMapping("{id}")
+    public Autore updateAutore(@PathVariable int id,@RequestBody AutoreDto autoreDto) throws NotFoundException{
+        return autoreService.updateAutore(id, autoreDto);
     }
 
-    @DeleteMapping("/autore/{id}")
-    public void deleteAutore(@PathVariable int id) throws AutoreNotFoundException{
+    @DeleteMapping("{id}")
+    public void deleteAutore(@PathVariable int id) throws NotFoundException{
         autoreService.deleteAutore(id);
     }
 }

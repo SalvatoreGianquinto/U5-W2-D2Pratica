@@ -1,7 +1,14 @@
 package it.epicode.U5_W2_D2Pratica.service;
 
-import it.epicode.U5_W2_D2Pratica.exception.AutoreNotFoundException;
+import it.epicode.U5_W2_D2Pratica.dto.AutoreDto;
+import it.epicode.U5_W2_D2Pratica.exception.NotFoundException;
 import it.epicode.U5_W2_D2Pratica.model.Autore;
+import it.epicode.U5_W2_D2Pratica.repository.AutoreRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,37 +17,44 @@ import java.util.Random;
 
 @Service
 public class AutoreService {
-    private List<Autore> autori = new ArrayList<>();
 
-    public Autore saveAutore(Autore autore){
-        autore.setId(new Random().nextInt(1,200));
+    @Autowired
+    private AutoreRepository autoreRepository;
+
+    public Autore saveAutore(AutoreDto autoreDto){
+
+        Autore autore = new Autore();
+        autore.setNome(autoreDto.getNome());
+        autore.setCognome(autoreDto.getCognome());
+        autore.setEmail(autoreDto.getEmail());
+        autore.setDataNascita(autoreDto.getDataNascita());
         autore.setAvatar("https://ui-avatars.com/api" + autore.getNome() + autore.getCognome());
-        autori.add(autore);
-        return autore;
+        return autoreRepository.save(autore);
     }
 
-    public Autore getAutore(int id) throws AutoreNotFoundException {
-        return autori.stream().filter(autore -> autore.getId()== id)
-                .findFirst()
-                .orElseThrow(() -> new AutoreNotFoundException("Non esiste un autore con questo id " + id));
+    public Autore getAutore(int id) throws NotFoundException {
+       return autoreRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Non esiste un autore con questo id " + id));
     }
 
-    public List<Autore> getAllAutori(){
-        return autori;
+    public Page<Autore> getAllAutori(int page, int size, String sortBy){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return autoreRepository.findAll(pageable);
     }
 
-    public Autore updateAutore(int id, Autore autore) throws AutoreNotFoundException{
-        Autore autoreDaCercare = getAutore(id);
-        autoreDaCercare.setNome(autore.getNome());
-        autoreDaCercare.setCognome(autore.getCognome());
-        autoreDaCercare.setEmail(autore.getEmail());
-        autoreDaCercare.setDataNascita(autore.getDataNascita());
-        return autoreDaCercare;
+    public Autore updateAutore(int id, AutoreDto autoreDto) throws NotFoundException{
+        Autore autoreDaAggiornare = getAutore(id);
+        autoreDaAggiornare.setNome(autoreDto.getNome());
+        autoreDaAggiornare.setCognome(autoreDto.getCognome());
+        autoreDaAggiornare.setEmail(autoreDto.getEmail());
+        autoreDaAggiornare.setDataNascita(autoreDto.getDataNascita());
+        autoreDaAggiornare.setAvatar("https://ui-avatars.com/api" + autoreDto.getNome() + autoreDto.getCognome());
+        return autoreRepository.save(autoreDaAggiornare);
     }
 
-    public void deleteAutore(int id) throws AutoreNotFoundException{
+    public void deleteAutore(int id) throws NotFoundException{
         Autore autoreDaCancellare = getAutore(id);
-        autori.remove(autoreDaCancellare);
+        autoreRepository.delete(autoreDaCancellare);
     }
 
 
